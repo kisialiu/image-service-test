@@ -1,6 +1,7 @@
 package com.vova.image
 
 import com.vova.aws.AWSS3Repository
+import org.slf4j.Logger
 import org.springframework.stereotype.Component
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
@@ -11,12 +12,14 @@ import javax.imageio.ImageWriteParam
 import javax.imageio.plugins.jpeg.JPEGImageWriteParam
 
 @Component
-class ImageOptimiser(var awsS3Repository: AWSS3Repository) {
+class ImageOptimiser(var awsS3Repository: AWSS3Repository,
+                     var logger: Logger) {
 
     fun optimiseImage(imagePath: String, imageType: ImageType): ByteArrayInputStream {
         /**
          * Optimises provided image. Changes jpeg quality and scales
          */
+        logger.info("Optimising the image")
         var bufImage: BufferedImage? = ImageIO.read(awsS3Repository.downloadObject(imagePath))
 
         bufImage = changeCompressionQuality(bufImage, imageType)
@@ -31,6 +34,7 @@ class ImageOptimiser(var awsS3Repository: AWSS3Repository) {
         /**
          * Changes compression quality of an image
          */
+        logger.info("Changing compression quality to ${imageType.quality}")
         val jpegParams = JPEGImageWriteParam(null)
         jpegParams.compressionMode = ImageWriteParam.MODE_EXPLICIT
         jpegParams.compressionQuality = imageType.quality
@@ -46,6 +50,7 @@ class ImageOptimiser(var awsS3Repository: AWSS3Repository) {
         /**
          * Scales an image
          */
+        logger.info("Scaling the image")
         if (imageType.imageScaleType == ImageScaleType.CROP) {
             return image?.getSubimage(0, 0, imageType.width, imageType.height)
         }

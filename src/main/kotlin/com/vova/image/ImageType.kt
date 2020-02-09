@@ -17,11 +17,7 @@ enum class ImageType(val type: String,
 
     companion object {
         fun getImageTypeByTypeName(typeName: String): ImageType {
-            try {
                 return valueOf(typeName.toUpperCase())
-            } catch (exception: IllegalArgumentException) {
-                throw ResponseStatusException(HttpStatus.NOT_FOUND, "Provided image type doesn't exist: $typeName")
-            }
         }
     }
 }

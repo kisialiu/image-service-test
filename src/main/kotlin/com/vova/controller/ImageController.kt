@@ -5,6 +5,7 @@ import com.vova.aws.AWSS3Repository
 import com.vova.image.ImageOptimiser
 import com.vova.image.ImageType
 import com.vova.util.S3ImageUtil
+import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
@@ -16,6 +17,7 @@ import java.net.URLDecoder
 @RequestMapping("/image")
 class ImageController(var awsS3Repository: AWSS3Repository,
                       var imageOptimiser: ImageOptimiser,
+                      var logger: Logger,
                       @Value("\${aws.s3Endpoint}") val bucketName: String,
                       @Value("\${source.rootUrl}") val rootUrl: String) {
 
@@ -61,11 +63,18 @@ class ImageController(var awsS3Repository: AWSS3Repository,
     }
 
     fun validate(typeName: String, fileName: String): ImageType {
-        val type: ImageType = ImageType.getImageTypeByTypeName(typeName)
+        logger.info("Validating request parameters")
+        try {
+            ImageType.getImageTypeByTypeName(typeName)
+        } catch (exception: IllegalArgumentException) {
+            logger.info("Provided image type doesn't exist: $typeName")
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Provided image type doesn't exist: $typeName")
+        }
         if (fileName.isEmpty()) {
+            logger.info("Reference file name is empty")
             throw ResponseStatusException(HttpStatus.NOT_FOUND, "Reference file name is empty")
         }
-        return type
+        return ImageType.getImageTypeByTypeName(typeName)
     }
 
 }
