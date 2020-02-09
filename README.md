@@ -7,6 +7,7 @@ Please make sure the following is installed
 * Java 8
 * Git
 * Maven
+
 There are several properties that can be configured for image-server. They are located in application.yml file.
 * source.rootUrl - root url for image source
 * aws.s3Endpoint - S3 bucket name. Need to be changed in order to be able to run the application for other AWS account
