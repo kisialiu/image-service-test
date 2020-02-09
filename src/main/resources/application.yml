@@ -1,0 +1,11 @@
+source:
+  rootUrl: https://cdn.stocksnap.io
+aws:
+  s3Endpoint: bjkf-image-service-test
+  accessKey: ${aws.accessKey}
+  secretKey: ${aws.secretKey}
+logdb:
+  endpoint: placeholder
+  name: placeholder
+  username: placeholder
+  password: placeholder
